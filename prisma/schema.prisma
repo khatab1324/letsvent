@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  emailVerified DateTime?
+  image         String?
+  name          String?     @unique(map: "name") @db.VarChar(50)
+  email         String      @unique(map: "email") @db.VarChar(100)
+  password      String?     @db.VarChar(255)
+  created_at    DateTime?   @default(now()) @db.DateTime(0)
+  Inventory     Inventory[]
+  account       Account[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Product {
+  id               String    @id @default(uuid())
+  title            String    @unique(map: "title")
+  Inventory        Inventory @relation(fields: [InventoryId], references: [id])
+  InventoryId      String
+  description      String?
+  status           Boolean
+  quantity         Int?
+  costOnYou        Int
+  priceForCustomer Int
+  provider         Provider? @relation(fields: [providerId], references: [id])
+  providerId       String?
+  create_at        DateTime  @default(now())
+  category         Category  @relation(fields: [categoryId], references: [id])
+  categoryId       String
+  Order            Order[]
+  Customer         Customer? @relation(fields: [customerId], references: [id])
+  customerId       String?
+}
+
+model Inventory {
+  id          String    @id @default(uuid())
+  title       String
+  user        User      @relation(fields: [userOwnerId], references: [id])
+  userOwnerId String
+  product     Product[]
+  Order       Order[]
+}
+
+model Provider {
+  id      String    @id @default(uuid())
+  name    String    @unique(map: "name")
+  phone   Int
+  address String?
+  email   String?
+  Product Product[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique(map: "name")
+  description String?
+  Product     Product[]
+}
+
+model Customer {
+  id      String    @id @default(uuid())
+  name    String    @unique(map: "name")
+  orders  Order[]
+  product Product[]
+}
+
+model Order {
+  id          String    @id @default(uuid())
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerId  String
+  address     String
+  email       String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId String
+  orderDetail String
+}
+
+model VerificationToken {
+  id      String   @unique @default(uuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  @@unique([email, token]) //this mean there is unique token for email
+}
