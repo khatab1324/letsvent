@@ -1,6 +1,10 @@
 import { v4 as uuid4 } from "uuid";
-import { getVerificationTokenByEmail } from "./funcrions/verificationTokenDatabase";
+import {
+  getVerificationTokenByEmail,
+  getVerificationTokenByToken,
+} from "./funcrions/verificationTokenDatabase";
 import { db } from "./db";
+import { getUserByEmail } from "./funcrions/userDatabase";
 export async function createVerificationToken(email: string) {
   const existingToken = await getVerificationTokenByEmail(email);
   if (existingToken) {
@@ -18,4 +22,28 @@ export async function createVerificationToken(email: string) {
     },
   });
   return verificationToken;
+}
+export async function checkAndverifiedToken(token: string) {
+  const existingToken = await getVerificationTokenByToken(token);
+  if (!existingToken) {
+    return { error: "your token is unvalid" };
+  }
+
+  const isExpiresToken = new Date(existingToken.expires) < new Date();
+  if (isExpiresToken) return { error: "your token is expired" };
+
+  const existUser = await getUserByEmail(existingToken.email);
+  if (!existUser) return { error: "email not found" };
+
+  const updateUserVerificationEmail = await db.user.update({
+    where: { email: existingToken.email },
+    data: {
+      emailVerified: new Date(),
+    },
+  });
+
+  const deleteVerificationToken = await db.verificationToken.delete({
+    where: { id: existingToken.id },
+  });
+  return { sccess: "email verified" };
 }
