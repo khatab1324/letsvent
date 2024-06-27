@@ -1,25 +1,20 @@
 "use client";
-import { signIn } from "@/auth";
-import Link from "next/link";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { useForm, SubmitHandler } from "react-hook-form"; // Add this line
-import ReactDOM from "react-dom";
-import { signinSchema } from "@/schemas";
+import { verificationSchema } from "@/schemas";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import clsx from "clsx";
 import { signin } from "@/lib/action/signin";
 import { useState, useTransition } from "react";
 import { FormError } from "./formError";
 import { FormSuccess } from "./formSeccess";
-import { SocialAuth } from "./social";
 import { useSearchParams } from "next/navigation";
-
-export default function SigninForm() {
+import { verificationUserAfterSignin } from "@/lib/action/verificationUserAfterSignin";
+// TODO : the email should come from session change this
+export default function VerificationForm({ token }: { token: string }) {
   const [isPannding, startTransition] = useTransition();
-
+  const [email, setTemp] = useState("");
+  const [password, setTemp1] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const {
@@ -27,19 +22,27 @@ export default function SigninForm() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<z.infer<typeof signinSchema>>({
-    resolver: zodResolver(signinSchema),
+  } = useForm<z.infer<typeof verificationSchema>>({
+    resolver: zodResolver(verificationSchema),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof signinSchema>> = async (
+  const onSubmit: SubmitHandler<z.infer<typeof verificationSchema>> = async (
     data
   ) => {
-    //i need to use server there for i will use signin.ts
     startTransition(() => {
-      signin(data).then((data) => {
-        console.log(data);
-        data?.error && setError(data.error);
-        data?.success && setSuccess(data.success);
+      //oooooh my shit code
+      verificationUserAfterSignin(
+        token,
+        data.username,
+        data.confirmPassword
+      ).then((data) => {
+        if (data?.email) setTemp(data.email);
+        if (data?.password) setTemp1(data.password);
+      });
+      const sendingObjectToSignIn = { email, password };
+      signin(sendingObjectToSignIn).then((data) => {
+        if (data.error) return data.error;
+        if (data.success) return data.success;
       });
     });
   };
@@ -52,10 +55,10 @@ export default function SigninForm() {
     // TODO: refact this by using spreted file
     <div className="flex flex-col w-full h-full p-6 text-center  rounded-xl bg-gradient-to-b from-slate-300 to-slate-300  ">
       <h3 className="mb-3 text-4xl font-extrabold text-dark-grey-900 ">
-        Sign In
+        continue sign in
       </h3>
-      <p className="mb-4 text-grey-700">Enter your email and password</p>
-      <SocialAuth />
+      <p className="mb-4 text-grey-700"></p>
+
       <form
         method="post"
         onSubmit={handleSubmit(onSubmit)}
@@ -65,44 +68,44 @@ export default function SigninForm() {
           <hr className=" border-grey-900 grow" />
         </div>
         <label
-          htmlFor="email"
+          htmlFor="username"
           className={clsx("mb-2 text-sm text-start text-grey-900 ", {
-            "text-red-600 ": errors.email,
+            "text-red-600 ": errors.username,
           })}
         >
-          Email
+          username
         </label>
         <input
           disabled={isPannding}
-          id="email"
-          placeholder="mail@loopple.com"
+          id="username"
+          placeholder="username"
           className="flex items-center w-full px-5 py-3 mr-2 text-sm font-medium outline-none focus:bg-grey-400 mb-2 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-md"
-          {...register("email")}
+          {...register("username")}
         />
-        {errors.email && (
+        {errors.username && (
           <p className="text-[0.8rem] font-medium text-destructive">
-            {errors.email.message}
+            {errors.username.message}
           </p>
         )}
         <label
-          htmlFor="password"
+          htmlFor="confirmPassword"
           className={clsx("mb-2 text-sm text-start text-grey-900 ", {
-            "text-red-600 ": errors.password,
+            // "text-red-600 ": errors.confirmPassword,
           })}
         >
-          Password
+          confirm Password
         </label>
         <input
           disabled={isPannding}
-          id="password"
-          type="password"
+          id="confirmPassword"
+          type="confirmPassword"
           placeholder="Enter a password"
           className="flex items-center w-full px-5 py-3 mb-1 mr-2 text-sm font-medium outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-md"
-          {...register("password")}
+          {...register("confirmPassword")}
         />
-        {errors.password && (
+        {errors.confirmPassword && (
           <p className="text-[0.8rem] font-medium text-destructive">
-            {errors.password.message}
+            {errors.confirmPassword.message}
           </p>
         )}
         <div>
@@ -117,14 +120,8 @@ export default function SigninForm() {
             { "bg-slate-500 hover:bg-slate-500": isPannding }
           )}
         >
-          Sign In
+          verifies your email
         </button>
-        <Link
-          href={"/signup"}
-          className="text-sm leading-relaxed text-grey-900"
-        >
-          Not registered yet?
-        </Link>
       </form>
     </div>
   );

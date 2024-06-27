@@ -1,3 +1,4 @@
+"use server";
 import { v4 as uuid4 } from "uuid";
 import {
   getVerificationTokenByEmail,
@@ -5,6 +6,8 @@ import {
 } from "./funcrions/verificationTokenDatabase";
 import { db } from "./db";
 import { getUserByEmail } from "./funcrions/userDatabase";
+import email from "next-auth/providers/email";
+import { emit } from "process";
 export async function createVerificationToken(email: string) {
   const existingToken = await getVerificationTokenByEmail(email);
   if (existingToken) {
@@ -26,6 +29,7 @@ export async function createVerificationToken(email: string) {
 export async function checkAndverifiedToken(token: string) {
   const existingToken = await getVerificationTokenByToken(token);
   if (!existingToken) {
+    console.log(existingToken);
     return { error: "your token is unvalid" };
   }
 
@@ -35,15 +39,5 @@ export async function checkAndverifiedToken(token: string) {
   const existUser = await getUserByEmail(existingToken.email);
   if (!existUser) return { error: "email not found" };
 
-  const updateUserVerificationEmail = await db.user.update({
-    where: { email: existingToken.email },
-    data: {
-      emailVerified: new Date(),
-    },
-  });
-
-  const deleteVerificationToken = await db.verificationToken.delete({
-    where: { id: existingToken.id },
-  });
-  return { sccess: "email verified" };
+  return { success: "email verified" };
 }

@@ -7,6 +7,9 @@ import { getUserByEmail } from "../funcrions/userDatabase";
 import { defaultSigninRedirect } from "../routes";
 import { createVerificationToken } from "../token";
 import sendVerificationEmail from "@/app/api/send";
+import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect";
+
 export async function signin(data: z.infer<typeof signinSchema>) {
   const validatedFields = signinSchema.safeParse(data);
   if (!validatedFields.success) {
@@ -26,16 +29,21 @@ export async function signin(data: z.infer<typeof signinSchema>) {
   if (!userExist.emailVerified) {
     const verificationToken = await createVerificationToken(userExist.email);
     sendVerificationEmail(verificationToken.email, verificationToken.token);
+
     return { success: "we send the verification again to your email" };
-  } 
+  }
   try {
     await signIn("credentials", {
       email,
       password,
       redirectTo: defaultSigninRedirect,
     });
-    return { success: "email verification send" };
+
+    return { success: "you verified your account you can pass" };
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":

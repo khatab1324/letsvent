@@ -25,3 +25,13 @@ export const signupSchema = z
     message: "Password does't match",
     path: ["confirmPassword"],
   });
+
+export const verificationSchema = z.object({
+  username: z
+    .string()
+    .min(4)
+    .regex(/^(?!.*\s)(?=.*[a-zA-Z].*[a-zA-Z].*[a-zA-Z]).*$/, {
+      message: "should have at least 3 char and not space",
+    }),
+  confirmPassword: z.string(),
+});

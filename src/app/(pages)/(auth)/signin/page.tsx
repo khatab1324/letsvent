@@ -1,6 +1,12 @@
 import SigninForm from "@/components/auth/signinForm";
-import { PrismaClient } from "@prisma/client";
+import { Suspense } from "react";
 
-export default async function SignIn() {
-  return <SigninForm />;
-}
+const SignIn = () => {
+  return (
+    <Suspense>
+      <SigninForm />
+    </Suspense>
+  );
+};
+
+export default SignIn;

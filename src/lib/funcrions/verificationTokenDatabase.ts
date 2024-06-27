@@ -1,3 +1,4 @@
+"use server";
 import { db } from "../db";
 
 export async function getVerificationTokenByEmail(email: string) {
@@ -18,6 +19,7 @@ export async function getVerificationTokenByToken(token: string) {
     });
     return verificationToken;
   } catch (error) {
+    console.log(error);
     return null;
   }
 }
