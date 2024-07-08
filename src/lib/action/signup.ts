@@ -5,7 +5,7 @@ import { getUserByEmail } from "../funcrions/userDatabase";
 import { db } from "../db";
 import bcrypt from "bcryptjs";
 import { v4 as uuid } from "uuid";
-import { createVerificationToken } from "../token";
+import { createVerificationToken } from "./token";
 import sendVerificationEmail from "@/app/api/send";
 export async function signup(data: z.infer<typeof signupSchema>) {
   console.log("data", data);

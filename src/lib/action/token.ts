@@ -3,9 +3,9 @@ import { v4 as uuid4 } from "uuid";
 import {
   getVerificationTokenByEmail,
   getVerificationTokenByToken,
-} from "./funcrions/verificationTokenDatabase";
-import { db } from "./db";
-import { getUserByEmail } from "./funcrions/userDatabase";
+} from "../funcrions/verificationTokenDatabase";
+import { db } from "../db";
+import { getUserByEmail } from "../funcrions/userDatabase";
 import email from "next-auth/providers/email";
 import { emit } from "process";
 export async function createVerificationToken(email: string) {

@@ -5,7 +5,7 @@ import { AuthError } from "next-auth";
 import { z } from "zod";
 import { getUserByEmail } from "../funcrions/userDatabase";
 import { defaultSigninRedirect } from "../routes";
-import { createVerificationToken } from "../token";
+import { createVerificationToken } from "./token";
 import sendVerificationEmail from "@/app/api/send";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect";

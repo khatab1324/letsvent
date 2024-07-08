@@ -3,7 +3,7 @@ import { FormError } from "@/components/auth/formError";
 import { FormSuccess } from "@/components/auth/formSeccess";
 import VerificationForm from "@/components/auth/verificationForm";
 import VerificationLoading from "@/components/auth/verificationLoading";
-import { checkAndverifiedToken } from "@/lib/token";
+import { checkAndverifiedToken } from "@/lib/action/token";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 // TODO: what you need to refact it

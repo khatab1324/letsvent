@@ -19,9 +19,8 @@ model User {
   Account           Account[]
   ChatMessages      ChatMessage[]
   GroupChatMessages GroupChatMessage[]
-  Chats1            Chat[]             @relation("User1")
-  Chats2            Chat[]             @relation("User2")
-  Participants      Participant[]
+  ChatsParticipant  ChatParticipant[]
+  Participants      GroupParticipant[]
 }
 
 model Account {
@@ -44,13 +43,10 @@ model Account {
 }
 
 model Chat {
-  id        String        @id @default(cuid())
-  user1     String
-  user2     String
-  create_at DateTime      @default(now())
-  messages  ChatMessage[]
-  user1Ref  User          @relation("User1", fields: [user1], references: [id])
-  user2Ref  User          @relation("User2", fields: [user2], references: [id])
+  id           String            @id @default(cuid())
+  create_at    DateTime          @default(now())
+  messages     ChatMessage[]
+  participants ChatParticipant[]
 }
 
 model GroupChat {
@@ -60,7 +56,7 @@ model GroupChat {
   creator_id   String
   create_at    DateTime           @default(now())
   messages     GroupChatMessage[]
-  participants Participant[]
+  participants GroupParticipant[]
 }
 
 model ChatMessage {
@@ -90,14 +86,25 @@ model VerificationToken {
   email   String
   token   String   @unique
   expires DateTime
+
   @@unique([email, token]) //this mean there is unique token for email
 }
 
-model Participant {
+model GroupParticipant {
   id        String    @id @default(cuid())
   user_id   String
   joined_at DateTime  @default(now())
   group_id  String
   user      User      @relation(fields: [user_id], references: [id])
   group     GroupChat @relation(fields: [group_id], references: [id])
+}
+
+model ChatParticipant {
+  id      String @id @default(cuid())
+  chat_id String
+  user_id String
+  chat    Chat   @relation(fields: [chat_id], references: [id])
+  user    User   @relation(fields: [user_id], references: [id])
+
+  @@unique([chat_id, user_id])
 }
