@@ -1,13 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Sendingemoji } from "./sendingemoji";
 import { socket } from "@/app/clientSocket";
-
+import { chatInfoContext } from "@/app/(pages)/chats/page";
 export const SendingTextFrom = () => {
   const [inputValue, setInputValue] = useState("");
+  const { chatInfo } = useContext(chatInfoContext);
   const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    socket.emit("message", inputValue);
+    socket.emit("message", { message: inputValue, chat_id: chatInfo?.chatId });
   };
   return (
     <div className="relative flex-grow">

@@ -14,7 +14,7 @@ export async function getChats() {
             include: {
               participants: {
                 include: {
-                  user: true, // Include user information to get names
+                  user: true,
                 },
               },
             },
@@ -28,6 +28,11 @@ export async function getChats() {
     const otherParticipant = chat.participants.find(
       (p) => p.user.id !== user.id
     );
+    console.log({
+      chatId: chat.id,
+      friendId: otherParticipant?.id,
+      friendName: otherParticipant?.user.name,
+    });
 
     return {
       chatId: chat.id,
@@ -37,4 +42,11 @@ export async function getChats() {
   });
   // TODO chatDetails add to id the last message
   return chatDetails;
+}
+export async function getChatConversation(chatId: string) {
+  const chatMessages = await db.chatMessage.findMany({
+    where: { chat_id: chatId },
+  });
+  console.log(chatMessages);
+  return chatMessages;
 }

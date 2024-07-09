@@ -1,6 +1,8 @@
-import React from "react";
-
+"use client";
+import React, { useContext } from "react";
+import { chatInfoContext } from "@/app/(pages)/chats/page";
 export const FriendInfoNavBar = () => {
+  const { chatInfo } = useContext(chatInfoContext);
   return (
     <div className="chat-header px-6 py-4 flex flex-row flex-none justify-between items-center shadow">
       <div className="flex">
@@ -11,9 +13,8 @@ export const FriendInfoNavBar = () => {
             alt=""
           />
         </div>
-        <div className="text-sm">
-          <p className="font-bold">Scarlett Johansson</p>
-          <p>Active 1h ago</p>
+        <div className="text-sm ">
+          <p className="font-bold mt-3">{chatInfo?.friendName}</p>
         </div>
       </div>
     </div>

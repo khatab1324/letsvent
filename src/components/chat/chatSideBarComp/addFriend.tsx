@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import { createChat } from "@/lib/action/createChat";
 import React, { useState } from "react";
 import { RiUserAddFill } from "react-icons/ri";
-import UserAvatar from "./getSession";
 import { SessionProvider, useSession } from "next-auth/react";
 
 export const AddFriend = () => {

@@ -1,26 +1,63 @@
-import { signOut } from "@/auth";
-import { db } from "@/lib/db";
+"use client";
 
-export default function SettingPage() {
+import { createContext, useEffect, useState } from "react";
+import { socket } from "../../clientSocket";
+import ChatSideBar from "@/components/chat/chatSideBarComp/chatSideBar";
+import { ChatingSection } from "@/components/chat/chatingSectionComp/chatingSection";
+import { Chat } from "@/lib/types";
+
+interface ChatInfoContextType {
+  chatInfo: Chat;
+  setChatInfo: React.Dispatch<React.SetStateAction<Chat>>;
+}
+const chatInfoDefaultValue: ChatInfoContextType = {
+  chatInfo: { chatId: "", friendId: "", friendName: "" },
+  setChatInfo: () => {},
+};
+export const chatInfoContext = createContext(chatInfoDefaultValue);
+export default function Home() {
+  const [chatInfo, setChatInfo] = useState<Chat>();
+  const [isConnected, setIsConnected] = useState(false);
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+    };
+  }, []);
+  socket.on("welcome", (data) => {
+    console.log("Received welcome message:", data.message);
+
+    setData(data.message);
+  });
+  console.log(chatInfo);
+
   return (
-    <main className="flex h-screen items-center justify-center">
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <button>sign out</button>
-      </form>
-      <div className="flex border rounded-lg shadow-lg p-4 h-5/6 w-5/6">
-        <div className="w-1/3 border-r pr-4">
-          <div className="mb-2">
-            <p className="font-bold">welcom</p>
-            <p className="text-sm text-gray-600">khatab</p>
-          </div>
-        </div>
-        <div className="w-2/3 pl-4">how what you doning</div>
+    <div className="h-screen w-full flex antialiased text-gray-200 bg-gray-900 overflow-hidden">
+      <div className="flex-1 flex flex-col">
+        <main className="flex-grow flex flex-row min-h-0">
+          <chatInfoContext.Provider value={{ chatInfo, setChatInfo }}>
+            <ChatSideBar />
+            <ChatingSection />
+          </chatInfoContext.Provider>
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
