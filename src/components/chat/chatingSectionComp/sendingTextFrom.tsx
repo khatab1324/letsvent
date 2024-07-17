@@ -3,12 +3,20 @@ import React, { useContext, useState } from "react";
 import { Sendingemoji } from "./sendingemoji";
 import { socket } from "@/app/clientSocket";
 import { chatInfoContext } from "@/app/(pages)/chats/page";
+import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 export const SendingTextFrom = () => {
   const [inputValue, setInputValue] = useState("");
   const { chatInfo } = useContext(chatInfoContext);
-  const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    socket.emit("message", { message: inputValue, chat_id: chatInfo?.chatId });
+    const user = await getUserFromSession();
+    console.log(user);
+    if (user)
+      socket.emit("room message", {
+        chat_id: chatInfo?.chatId,
+        sender_id: user.id,
+        message: inputValue,
+      });
   };
   return (
     <div className="relative flex-grow">

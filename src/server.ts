@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
+import { addMessageToChat } from "./lib/action/addMessageToChat";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
@@ -9,22 +10,38 @@ const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
   const httpServer = createServer(handler);
-
   const io = new Server(httpServer);
 
-  io.on("connection", (socket) => {
-    console.log("New client connected");
-    socket.emit("welcome", { message: "Welcome to the server!" });
+  io.on("connection", async (socket) => {
+    let ids: string;
 
-    socket.on("message", (data) => {
+    console.log("New client connected");
+    socket.emit("welcome", { d: "Welcome to the server!" });
+
+    socket.on("message", (data: { message: string; chat_id: string }) => {
       // Here you can save the message to your database
-      console.log("Message received: ", data);
+      console.log("Message Received: ", data);
 
       // Broadcast the message to all connected clients
-      io.emit("message", data);
+      console.log("ids", ids);
+
+      socket.to(ids).emit("message", data);
     });
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
+
+    socket.on("join-chat", (id: string) => {
+      console.log("id:==================", id);
+      socket.join(id);
+    });
+
+    socket.on("room message", async ({ chat_id, sender_id, message }) => {
+      try {
+        console.log(chat_id, "user id", sender_id);
+        await addMessageToChat(message, sender_id, chat_id);
+        io.to(chat_id).emit("room message", { message });
+      } catch (error) {
+        io.to(chat_id).emit("room message", { error });
+        console.error("Error handling room message:", error);
+      }
     });
   });
 

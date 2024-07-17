@@ -3,6 +3,7 @@ import { getChatConversation, getChats } from "@/lib/action/getChatsToUser";
 import React, { useContext, useEffect, useState } from "react";
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { Chat, messageInfo } from "@/lib/types";
+import { socket } from "@/app/clientSocket";
 export const FriendsList = () => {
   const { setChatInfo } = useContext(chatInfoContext);
   const [chatsList, setChatList] = useState<Chat[]>([]);
@@ -20,8 +21,12 @@ export const FriendsList = () => {
           messageInfo = data;
           chat.messageInfo = messageInfo;
         }
+        console.log("====================================");
+        console.log("chat id :", chat.chatId);
+        console.log("====================================");
+        socket.emit("join-chat", chat.chatId);
       });
-
+      //TODO: make join for all user chats 
     setChatInfo(chat);
   };
   return (

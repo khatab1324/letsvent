@@ -1,3 +1,4 @@
+"use server";
 // TODO  this file was in userDatabase file but the userDatabse file run firstly
 //becuase that it show you this message Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization
 // i add the function in here
