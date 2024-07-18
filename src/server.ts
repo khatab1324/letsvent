@@ -18,16 +18,6 @@ app.prepare().then(() => {
     console.log("New client connected");
     socket.emit("welcome", { d: "Welcome to the server!" });
 
-    socket.on("message", (data: { message: string; chat_id: string }) => {
-      // Here you can save the message to your database
-      console.log("Message Received: ", data);
-
-      // Broadcast the message to all connected clients
-      console.log("ids", ids);
-
-      socket.to(ids).emit("message", data);
-    });
-
     socket.on("join-chat", (id: string) => {
       console.log("id:==================", id);
       socket.join(id);
@@ -36,8 +26,8 @@ app.prepare().then(() => {
     socket.on("room message", async ({ chat_id, sender_id, message }) => {
       try {
         console.log(chat_id, "user id", sender_id);
-        await addMessageToChat(message, sender_id, chat_id);
-        io.to(chat_id).emit("room message", { message });
+        const addmessaeg = await addMessageToChat(message, sender_id, chat_id);
+        io.to(chat_id).emit("room message", { addmessaeg });
       } catch (error) {
         io.to(chat_id).emit("room message", { error });
         console.error("Error handling room message:", error);

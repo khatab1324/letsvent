@@ -17,6 +17,7 @@ export const SendingTextFrom = () => {
         sender_id: user.id,
         message: inputValue,
       });
+    setInputValue("");
   };
   return (
     <div className="relative flex-grow">

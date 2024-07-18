@@ -36,12 +36,7 @@ export default function Home() {
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("room message", (data) => {
-      console.log("====================================");
-      console.log("helolo");
-      console.log("====================================");
-      console.log(socket.id);
-
-      console.log(data);
+      
     });
     return () => {
       socket.off("connect", onConnect);

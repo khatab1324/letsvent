@@ -8,7 +8,10 @@ export async function addMessageToChat(
   try {
     console.log("arraive to here");
 
-    await db.chatMessage.create({ data: { message, sender_id, chat_id } });
+    const addmessaeg = await db.chatMessage.create({
+      data: { message, sender_id, chat_id },
+    });
+    return addmessaeg;
   } catch (error) {
     console.log(error);
     throw new Error();

@@ -1,12 +1,51 @@
 import { chatInfoContext } from "@/app/(pages)/chats/page";
-import React, { useContext } from "react";
+import { socket } from "@/app/clientSocket";
+import { messageInfo } from "@/lib/types";
+import React, { useContext, useEffect, useRef } from "react";
 
 export const ConversationSection = () => {
-  const { chatInfo } = useContext(chatInfoContext);
+  const { chatInfo, setChatInfo } = useContext(chatInfoContext);
+  useEffect(() => {
+    const handleMessage = (message: messageInfo[0]) => {
+      setChatInfo((prevChatInfo) => {
+        if (prevChatInfo) {
+          const updatedMessageInfo = prevChatInfo.messageInfo
+            ? [...prevChatInfo.messageInfo, message]
+            : [message];
+
+          return {
+            ...prevChatInfo,
+            messageInfo: updatedMessageInfo,
+          };
+        }
+        return undefined;
+      });
+    };
+
+    socket.on("room message", handleMessage);
+
+    //clean the listner
+    return () => {
+      socket.off("room message", handleMessage);
+    };
+  }, [setChatInfo]);
+
+  //this to auto scroll when new message added
+  const chatBodyRef = useRef<HTMLDivElement | null>(null);
+  const scrollToBottom = () => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    }
+  };
+
+  // Scroll to the bottom whenever chatInfo changes
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatInfo]);
   return (
-    <div className="chat-body p-4 flex-1 overflow-y-scroll">
+    <div ref={chatBodyRef} className="chat-body p-4 flex-1 overflow-y-auto">
       {chatInfo?.messageInfo &&
-        chatInfo?.messageInfo.map((message, index) => (
+        chatInfo.messageInfo.map((message, index) => (
           <div key={index}>
             <p className="p-4 text-center text-sm text-gray-500">8:04 PM</p>
             <div className="flex flex-row justify-start">
