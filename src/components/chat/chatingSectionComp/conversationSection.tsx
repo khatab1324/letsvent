@@ -1,10 +1,21 @@
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { socket } from "@/app/clientSocket";
+import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 import { messageInfo } from "@/lib/types";
-import React, { useContext, useEffect, useRef } from "react";
+import clsx from "clsx";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 export const ConversationSection = () => {
   const { chatInfo, setChatInfo } = useContext(chatInfoContext);
+  const [currentUser, setCurrentUser] = useState<any>();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUserFromSession();
+      setCurrentUser(user);
+    };
+    fetchUser();
+  }, []);
+
   useEffect(() => {
     const handleMessage = (message: messageInfo[0]) => {
       setChatInfo((prevChatInfo) => {
@@ -28,7 +39,7 @@ export const ConversationSection = () => {
     return () => {
       socket.off("room message", handleMessage);
     };
-  }, [setChatInfo]);
+  }, [chatInfo]);
 
   //this to auto scroll when new message added
   const chatBodyRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +59,12 @@ export const ConversationSection = () => {
         chatInfo.messageInfo.map((message, index) => (
           <div key={index}>
             <p className="p-4 text-center text-sm text-gray-500">8:04 PM</p>
-            <div className="flex flex-row justify-start">
+            <div
+              className={clsx("flex flex-row", {
+                "justify-end": message.sender_id === currentUser?.id,
+                "justify-start": message.sender_id !== currentUser?.id,
+              })}
+            >
               <p className="w-3 relative flex flex-shrink-0"></p>
               <div className="messages text-sm text-gray-700 grid grid-flow-row gap-2">
                 <div className="flex items-center group">

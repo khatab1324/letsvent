@@ -27,7 +27,7 @@ app.prepare().then(() => {
       try {
         console.log(chat_id, "user id", sender_id);
         const addmessaeg = await addMessageToChat(message, sender_id, chat_id);
-        io.to(chat_id).emit("room message", { addmessaeg });
+        io.to(chat_id).emit("room message", addmessaeg);
       } catch (error) {
         io.to(chat_id).emit("room message", { error });
         console.error("Error handling room message:", error);
