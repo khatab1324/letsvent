@@ -5,6 +5,7 @@ import { IoIosLogOut } from "react-icons/io";
 import { signOut } from "@/auth";
 import { SignOutButton } from "./signOutButton";
 import { Account } from "./account";
+import { AddGroup } from "./addGroup";
 
 export const NavbarForSideBarSection = () => {
   return (
@@ -15,7 +16,7 @@ export const NavbarForSideBarSection = () => {
       </p>
       <div className="flex flex-row justify-between w-1/4">
         <AddFriend />
-        <SignOutButton />
+        <AddGroup />
       </div>
     </div>
   );

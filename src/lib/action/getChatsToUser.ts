@@ -28,16 +28,19 @@ export async function getChats() {
     const otherParticipant = chat.participants.find(
       (p) => p.user.id !== user.id
     );
-    console.log({
-      chatId: chat.id,
-      friendId: otherParticipant?.id,
-      friendName: otherParticipant?.user.name,
-    });
+    console.log(
+      {
+        chatId: chat.id,
+        friendId: otherParticipant?.user.id,
+        friendName: otherParticipant?.user.name,
+      }
+    );
 
     return {
       chatId: chat.id,
-      friendId: otherParticipant?.id,
+      friendId: otherParticipant?.user.id,
       friendName: otherParticipant?.user.name,
+      friendImage: otherParticipant?.user.image,
     };
   });
   // TODO chatDetails add to id the last message
