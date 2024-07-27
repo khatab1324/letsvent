@@ -35,6 +35,9 @@ export const Account = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result as string);
+        console.log("====================================");
+        console.log(reader.result);
+        console.log("====================================");
       };
       reader.readAsDataURL(file);
     }

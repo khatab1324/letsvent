@@ -1,10 +1,21 @@
 export type Chat =
   | {
       chatId: string;
-      friendId: string | undefined;
-      friendName: string | null | undefined;
+      chatName: string | undefined | null;
+      friends: {
+        friendId: string | undefined;
+        friendName: string | null | undefined;
+      }[];
+      chatImage: string;
       messageInfo?: messageInfo;
-      groupChats?: groupChats;
+    }
+  | undefined;
+
+export type ChatsList =
+  | {
+      chatId: string;
+      chatName: string | null | undefined;
+      img_url: string | null;
     }
   | undefined;
 
@@ -41,4 +52,3 @@ export type groupChats = ({
   creator_id: string;
   create_at: Date;
 })[];
-

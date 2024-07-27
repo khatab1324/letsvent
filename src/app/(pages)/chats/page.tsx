@@ -11,7 +11,8 @@ interface ChatInfoContextType {
   setChatInfo: React.Dispatch<React.SetStateAction<Chat>>;
 }
 const chatInfoDefaultValue: ChatInfoContextType = {
-  chatInfo: { chatId: "", friendId: "", friendName: "" },
+  //TODO: add type not force like this
+  chatInfo: { chatId: "", friends: [], chatName: "", chatImage: "" },
   setChatInfo: () => {},
 };
 export const chatInfoContext = createContext(chatInfoDefaultValue);
@@ -35,9 +36,7 @@ export default function Home() {
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    socket.on("room message", (data) => {
-      
-    });
+    socket.on("room message", (data) => {});
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);

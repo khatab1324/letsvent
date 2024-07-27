@@ -28,19 +28,18 @@ export async function getChats() {
     const otherParticipant = chat.participants.find(
       (p) => p.user.id !== user.id
     );
-    console.log(
-      {
-        chatId: chat.id,
-        friendId: otherParticipant?.user.id,
-        friendName: otherParticipant?.user.name,
-      }
-    );
 
     return {
       chatId: chat.id,
-      friendId: otherParticipant?.user.id,
-      friendName: otherParticipant?.user.name,
-      friendImage: otherParticipant?.user.image,
+      chatName: otherParticipant?.user.name,
+      friends: [
+        {
+          friendId: otherParticipant?.user.id,
+          friendName: otherParticipant?.user.name,
+          friendImage: otherParticipant?.user.image,
+        },
+      ],
+      chatImage: otherParticipant?.user.image,
     };
   });
   // TODO chatDetails add to id the last message
@@ -52,4 +51,39 @@ export async function getChatConversation(chatId: string) {
   });
   console.log(chatMessages);
   return chatMessages;
+}
+
+export async function getChatFromId(chatId: string) {
+  const user = await getUserFromSession();
+  if (!user) return;
+  const chat = await db.chat.findUnique({
+    where: { id: chatId },
+    include: {
+      participants: {
+        include: { user: true },
+      },
+    },
+  });
+  // const friend = chat?.participants.find(
+  //   (element) => element.user.id !== user.id
+  // );
+  const friendsInfo = chat?.participants.map((participant) => {
+    if (participant.user.id !== user.id)
+      return {
+        chatId,
+        chatName: participant?.user.name,
+        friends: [
+          {
+            friendId: participant?.user.id,
+            friendName: participant?.user.name,
+            friendImage: participant?.user.image,
+          },
+        ],
+        chatImage: participant.user.image,
+      };
+  });
+  console.log("====================================");
+  console.log(friendsInfo);
+  console.log("====================================");
+  return friendsInfo;
 }

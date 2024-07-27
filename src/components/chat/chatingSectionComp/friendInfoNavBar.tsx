@@ -9,12 +9,12 @@ export const FriendInfoNavBar = () => {
         <div className="w-12 h-12 mr-4 relative flex flex-shrink-0">
           <img
             className="shadow-md rounded-full w-full h-full object-cover"
-            src="https://randomuser.me/api/portraits/women/33.jpg"
+            src={chatInfo?.chatImage}
             alt=""
           />
         </div>
         <div className="text-sm ">
-          <p className="font-bold mt-3">{chatInfo?.friendName}</p>
+          <p className="font-bold mt-3">{chatInfo?.chatName}</p>
         </div>
       </div>
     </div>

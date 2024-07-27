@@ -3,7 +3,7 @@ import { signOut } from "next-auth/react";
 import { db } from "../db";
 import { getUserFromSession } from "../funcrions/getUserFromSession";
 
-export async function getGroupFromDatabase() {
+export async function getGroupsFromDatabase() {
   const currentUser = await getUserFromSession();
   if (!currentUser) {
     signOut();
@@ -31,11 +31,32 @@ export async function getGroupFromDatabase() {
       },
     },
     include: {
-      participants: true,
+      participants: {
+        include: {
+          user: true, // Assuming you have a relation to fetch user details
+        },
+      },
     },
   });
 
   console.log("groupChats:+=================", groupChats);
 
-  return groupChats;
+  const result = groupChats.map((groupChat) => {
+    const friends = groupChat.participants.map((participant) => {
+      const { id, name, image } = participant.user;
+      return {
+        friendId: id,
+        friendName: name,
+        friendImage: image,
+      };
+    });
+    return {
+      chatId: groupChat.id,
+      chatName: groupChat.group_name,
+      friends: friends,
+      chatImage: groupChat.img_url,
+    };
+  });
+
+  return result;
 }
