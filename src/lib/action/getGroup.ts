@@ -60,3 +60,37 @@ export async function getGroupsFromDatabase() {
 
   return result;
 }
+
+export async function getGroupById(groupId: string) {
+  const user = await getUserFromSession();
+  const chat = await db.groupChat.findUnique({
+    where: {
+      id: groupId,
+    },
+    include: {
+      participants: {
+        include: { user: true },
+      },
+    },
+  });
+  if (!chat) {
+    console.log({ error: "chat not found" });
+    return { error: "chat not found" };
+  }
+  const result = [
+    {
+      chatId: chat.id,
+      chatName: chat.group_name,
+      friends: chat.participants.map((element) => {
+        return {
+          friendId: element.user.id,
+          friendName: element.user.name,
+          friendImage: element.user.image,
+        };
+      }),
+      chatImage: chat.img_url,
+    },
+  ];
+
+  return result;
+}

@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { Chat, ChatsList, messageInfo } from "@/lib/types";
 import { socket } from "@/app/clientSocket";
-import { getGroupsFromDatabase } from "@/lib/action/getGroup";
+import { getGroupById, getGroupsFromDatabase } from "@/lib/action/getGroup";
 export const FriendsList = () => {
   const { setChatInfo } = useContext(chatInfoContext);
   const [chatsList, setChatList] = useState<ChatsList[]>([]);
@@ -44,6 +44,7 @@ export const FriendsList = () => {
   const clickHandler = async (chat: ChatsList) => {
     if (chat) {
       let chatsInfo = await getChatFromId(chat.chatId);
+      if (!chatsInfo) chatsInfo = await getGroupById(chat.chatId);
       let messageInfo = await getChatConversation(chat.chatId);
       console.log("====================================");
       console.log(chatsInfo);
