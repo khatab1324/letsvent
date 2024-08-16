@@ -1,6 +1,7 @@
 "use server";
 import { db } from "../db";
 import { getUserFromSession } from "../funcrions/getUserFromSession";
+import { Chat } from "../types";
 
 export async function getChats() {
   const user = await getUserFromSession();
@@ -28,8 +29,9 @@ export async function getChats() {
     const otherParticipant = chat.participants.find(
       (p) => p.user.id !== user.id
     );
-
+    //TODO : return variable that have type chat[]
     return {
+      role: "CHAT",
       chatId: chat.id,
       chatName: otherParticipant?.user.name,
       friends: [
@@ -67,9 +69,14 @@ export async function getChatFromId(chatId: string) {
   // const friend = chat?.participants.find(
   //   (element) => element.user.id !== user.id
   // );
-  const friendsInfo = chat?.participants.map((participant) => {
-    if (participant.user.id !== user.id)
+  if (!chat) {
+    console.log({ error: "chat not found" });
+    return;
+  }
+  const friendsInfo: Chat[] = chat?.participants.map((participant) => {
+    if (participant.user.id !== user.id) {
       return {
+        role: "CHAT",
         chatId,
         chatName: participant?.user.name,
         friends: [
@@ -81,9 +88,8 @@ export async function getChatFromId(chatId: string) {
         ],
         chatImage: participant.user.image,
       };
+    }
+    return undefined;
   });
-  console.log("====================================");
-  console.log(friendsInfo);
-  console.log("====================================");
   return friendsInfo;
 }

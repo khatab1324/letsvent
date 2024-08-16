@@ -17,20 +17,27 @@ export const ConversationSection = () => {
   }, []);
 
   useEffect(() => {
-    const handleMessage = (message: messageInfo[0]) => {
-      setChatInfo((prevChatInfo) => {
-        if (prevChatInfo) {
-          const updatedMessageInfo = prevChatInfo.messageInfo
-            ? [...prevChatInfo.messageInfo, message]
-            : [message];
+    console.log("chatInfo", chatInfo);
 
-          return {
-            ...prevChatInfo,
-            messageInfo: updatedMessageInfo,
-          };
-        }
-        return undefined;
-      });
+    const handleMessage = (message: messageInfo[0]) => {
+      if (message)
+        setChatInfo((prevChatInfo) => {
+          if (prevChatInfo) {
+            const updatedMessageInfo = prevChatInfo.messageInfo
+              ? [...prevChatInfo.messageInfo, message]
+              : [message];
+
+            return {
+              ...prevChatInfo,
+              messageInfo: updatedMessageInfo,
+            };
+          }
+          return undefined;
+        });
+      else {
+        console.log("recive null");
+        return;
+      }
     };
 
     socket.on("room message", handleMessage);

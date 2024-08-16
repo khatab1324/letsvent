@@ -12,7 +12,13 @@ interface ChatInfoContextType {
 }
 const chatInfoDefaultValue: ChatInfoContextType = {
   //TODO: add type not force like this
-  chatInfo: { chatId: "", friends: [], chatName: "", chatImage: "" },
+  chatInfo: {
+    role: "CHAT",
+    chatId: "",
+    friends: [],
+    chatName: "",
+    chatImage: "",
+  },
   setChatInfo: () => {},
 };
 export const chatInfoContext = createContext(chatInfoDefaultValue);

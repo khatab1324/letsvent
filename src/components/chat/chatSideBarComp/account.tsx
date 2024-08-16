@@ -29,16 +29,14 @@ export const Account = () => {
     };
     userInfoFunction();
   }, []);
+  //TODO: add this to hock and reuse it in this file and in sending image file
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result as string);
-        console.log("====================================");
-        console.log(reader.result);
-        console.log("====================================");
-      };
+     };
       reader.readAsDataURL(file);
     }
   };

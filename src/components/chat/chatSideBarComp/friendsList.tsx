@@ -6,9 +6,13 @@ import {
 } from "@/lib/action/getChatsToUser";
 import React, { useContext, useEffect, useState } from "react";
 import { chatInfoContext } from "@/app/(pages)/chats/page";
-import { Chat, ChatsList, messageInfo } from "@/lib/types";
+import { Chat, ChatsList, messageInfo, Role } from "@/lib/types";
 import { socket } from "@/app/clientSocket";
-import { getGroupById, getGroupsFromDatabase } from "@/lib/action/getGroup";
+import {
+  getGroupById,
+  getGroupChatConversation,
+  getGroupsFromDatabase,
+} from "@/lib/action/getGroup";
 export const FriendsList = () => {
   const { setChatInfo } = useContext(chatInfoContext);
   const [chatsList, setChatList] = useState<ChatsList[]>([]);
@@ -22,6 +26,7 @@ export const FriendsList = () => {
       if (userChats) {
         const userChatList = userChats.map((chat) => {
           return {
+            role: chat.role as Role,
             chatId: chat.chatId,
             chatName: chat.chatName || "",
             img_url: chat.chatImage || null,
@@ -31,6 +36,7 @@ export const FriendsList = () => {
       }
       if (!groups) return;
       const newChats: ChatsList[] = groups.map((groupChat) => ({
+        role: groupChat.role as Role,
         chatId: groupChat.chatId,
         chatName: groupChat.chatName,
         img_url: groupChat.chatImage,
@@ -43,16 +49,23 @@ export const FriendsList = () => {
 
   const clickHandler = async (chat: ChatsList) => {
     if (chat) {
+      // TODO make the select based on the role
+      //  NOTE: this code written before the role
       let chatsInfo = await getChatFromId(chat.chatId);
       if (!chatsInfo) chatsInfo = await getGroupById(chat.chatId);
+      //TODO : make the the chatInfo take group id and chat id
       let messageInfo = await getChatConversation(chat.chatId);
+      if (!messageInfo || messageInfo.length == 0)
+        messageInfo = await getGroupChatConversation(chat.chatId);
       console.log("====================================");
-      console.log(chatsInfo);
+      console.log("messageInfo", messageInfo);
       console.log("====================================");
-      chatsInfo?.map((chatInfo) => {
+      chatsInfo?.map((chatInfo: Chat) => {
+        //TODO :edit this any
         setChatInfo((prevChatInfo: any) => {
           return {
             ...prevChatInfo,
+            role: chatInfo?.role,
             chatId: chatInfo?.chatId,
             chatName: chatInfo?.chatName,
             chatImage: chatInfo?.chatImage,

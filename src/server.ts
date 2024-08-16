@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
-import { addMessageToChat } from "./lib/action/addMessageToChat";
+import { addMessageToChat, addMessageToGroup } from "./lib/action/addMessage";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
@@ -27,12 +27,35 @@ app.prepare().then(() => {
       try {
         console.log(chat_id, "user id", sender_id);
         const addmessaeg = await addMessageToChat(message, sender_id, chat_id);
+        console.log("addmessaeg", addmessaeg);
+
         io.to(chat_id).emit("room message", addmessaeg);
       } catch (error) {
         io.to(chat_id).emit("room message", { error });
         console.error("Error handling room message:", error);
       }
     });
+    socket.on(
+      "group message",
+      async ({ group_chat_id, sender_id, message }) => {
+        try {
+          console.log(group_chat_id, "user id", sender_id);
+          console.log("helooooooooooooo in groupppppppp");
+          const addmessage = await addMessageToGroup(
+            message,
+            sender_id,
+            group_chat_id
+          );
+          console.log("====================================");
+          console.log("addmessage", addmessage);
+          console.log("====================================");
+          io.to(group_chat_id).emit("room message", addmessage);
+        } catch (error) {
+          io.to(group_chat_id).emit("room message", { error });
+          console.error("Error handling room message:", error);
+        }
+      }
+    );
   });
 
   httpServer

@@ -1,18 +1,21 @@
+export type Role = "GROUP" | "CHAT";
 export type Chat =
   | {
+      role: Role;
       chatId: string;
       chatName: string | undefined | null;
       friends: {
         friendId: string | undefined;
         friendName: string | null | undefined;
       }[];
-      chatImage: string;
+      chatImage: string | null;
       messageInfo?: messageInfo;
     }
   | undefined;
 
 export type ChatsList =
   | {
+      role: Role;
       chatId: string;
       chatName: string | null | undefined;
       img_url: string | null;

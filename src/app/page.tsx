@@ -2,6 +2,7 @@ import Footer from "../components/homePage/footer";
 import Main from "../components/homePage/main";
 import Navbar from "../components/homePage/navbar";
 // import {db} from "@/"
+
 export default function Home() {
   return (
     <div className=" h-screen">
@@ -12,4 +13,5 @@ export default function Home() {
       </div>
     </div>
   );
+  
 }

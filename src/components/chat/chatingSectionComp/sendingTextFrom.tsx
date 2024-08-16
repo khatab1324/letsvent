@@ -10,13 +10,25 @@ export const SendingTextFrom = () => {
   const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const user = await getUserFromSession();
-    console.log(user);
-    if (user)
-      socket.emit("room message", {
-        chat_id: chatInfo?.chatId,
-        sender_id: user.id,
-        message: inputValue,
-      });
+    console.log("user", user);
+    if (user) {
+      console.log("====================================");
+      console.log("chatInfo", chatInfo);
+      console.log("====================================");
+      if (chatInfo?.role === "CHAT") {
+        socket.emit("room message", {
+          chat_id: chatInfo?.chatId,
+          sender_id: user.id,
+          message: inputValue,
+        });
+      } else if (chatInfo?.role === "GROUP") {
+        socket.emit("group message", {
+          group_chat_id: chatInfo?.chatId,
+          sender_id: user.id,
+          message: inputValue,
+        });
+      }
+    }
     setInputValue("");
   };
   return (
