@@ -1,6 +1,6 @@
 import React from "react";
 import { SendingFile } from "./sendingFile";
-import { SendingImg } from "./sendingImg";
+import {SendingImg} from "./sendingImg";
 import { SendingTextFrom } from "./sendingTextFrom";
 
 export const ConversationsInputSection = () => {

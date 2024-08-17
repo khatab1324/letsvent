@@ -15,7 +15,7 @@ export const Storys = () => {
         <p>Your Story</p>
       </div>
 
-      <div className="text-sm text-center mr-4">
+      {/* <div className="text-sm text-center mr-4">
         <div className="p-1 rounded-full">
           <div className="w-16 h-16 relative flex flex-shrink-0">
             <img
@@ -53,7 +53,7 @@ export const Storys = () => {
           </div>
         </div>
         <p>Adam</p>
-      </div>
+      </div> */}
     </div>
   );
 };

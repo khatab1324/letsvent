@@ -75,9 +75,15 @@ export const ConversationSection = () => {
               <p className="w-3 relative flex flex-shrink-0"></p>
               <div className="messages text-sm text-gray-700 grid grid-flow-row gap-2">
                 <div className="flex items-center group">
-                  <p className="px-6 py-3 rounded-t-full rounded-r-full bg-gray-800 max-w-xs lg:max-w-md text-gray-200">
-                    {message.message}
-                  </p>
+                  {message.media_link && (
+                    <img className="w-30 h-36" src={message.media_link} />
+                  )}
+                  {message.message && (
+                    <p className="px-6 py-3 rounded-t-full rounded-r-full bg-gray-800 max-w-xs lg:max-w-md text-gray-200">
+                      {message.message}
+                    </p>
+                  )}
+
                   <button
                     type="button"
                     className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"

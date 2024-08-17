@@ -3,12 +3,13 @@ import { db } from "../db";
 export async function addMessageToChat(
   message: string,
   sender_id: string,
-  chat_id: string
+  chat_id: string,
+  media_link?: string
 ) {
   try {
     console.log("arraive to hereeeee");
     const addmessaeg = await db.chatMessage.create({
-      data: { message, sender_id, chat_id },
+      data: { message, sender_id, chat_id, media_link },
     });
     console.log("====================================");
     console.log("adddddddddddddd message", addmessaeg);

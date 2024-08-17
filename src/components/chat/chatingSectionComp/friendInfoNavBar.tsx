@@ -9,7 +9,7 @@ export const FriendInfoNavBar = () => {
         <div className="w-12 h-12 mr-4 relative flex flex-shrink-0">
           <img
             className="shadow-md rounded-full w-full h-full object-cover"
-            src={chatInfo?.chatImage}
+            src={chatInfo?.chatImage as string}
             alt=""
           />
         </div>

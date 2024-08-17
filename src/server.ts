@@ -23,21 +23,29 @@ app.prepare().then(() => {
       socket.join(id);
     });
 
-    socket.on("room message", async ({ chat_id, sender_id, message }) => {
-      try {
-        console.log(chat_id, "user id", sender_id);
-        const addmessaeg = await addMessageToChat(message, sender_id, chat_id);
-        console.log("addmessaeg", addmessaeg);
+    socket.on(
+      "room message",
+      async ({ chat_id, sender_id, message, media_link }) => {
+        try {
+          console.log(chat_id, "user id", sender_id);
+          const addmessaeg = await addMessageToChat(
+            message,
+            sender_id,
+            chat_id,
+            media_link
+          );
+          console.log("addmessaeg", addmessaeg);
 
-        io.to(chat_id).emit("room message", addmessaeg);
-      } catch (error) {
-        io.to(chat_id).emit("room message", { error });
-        console.error("Error handling room message:", error);
+          io.to(chat_id).emit("room message", addmessaeg);
+        } catch (error) {
+          io.to(chat_id).emit("room message", { error });
+          console.error("Error handling room message:", error);
+        }
       }
-    });
+    );
     socket.on(
       "group message",
-      async ({ group_chat_id, sender_id, message }) => {
+      async ({ group_chat_id, sender_id, message, media_link }) => {
         try {
           console.log(group_chat_id, "user id", sender_id);
           console.log("helooooooooooooo in groupppppppp");
