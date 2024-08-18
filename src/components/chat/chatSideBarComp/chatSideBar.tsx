@@ -10,6 +10,7 @@ export default function ChatSideBar() {
       <NavbarForSideBarSection />
       <SearchForFriendForm />
       <Storys />
+      <hr />
       <FriendsList />
     </section>
   );

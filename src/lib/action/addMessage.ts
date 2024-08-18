@@ -23,13 +23,14 @@ export async function addMessageToChat(
 export async function addMessageToGroup(
   message: string,
   sender_id: string,
-  group_chat_id: string
+  group_chat_id: string,
+  media_link?: string
 ) {
   try {
     console.log("arraive to here");
 
     const addmessage = await db.groupChatMessage.create({
-      data: { message, sender_id, group_id: group_chat_id },
+      data: { message, sender_id, group_id: group_chat_id, media_link },
     });
     return addmessage;
   } catch (error) {

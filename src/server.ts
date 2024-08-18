@@ -52,7 +52,8 @@ app.prepare().then(() => {
           const addmessage = await addMessageToGroup(
             message,
             sender_id,
-            group_chat_id
+            group_chat_id,
+            media_link
           );
           console.log("====================================");
           console.log("addmessage", addmessage);
