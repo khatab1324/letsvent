@@ -12,9 +12,6 @@ export const SendingTextFrom = () => {
     const user = await getUserFromSession();
     console.log("user", user);
     if (user) {
-      console.log("====================================");
-      console.log("chatInfo", chatInfo);
-      console.log("====================================");
       if (chatInfo?.role === "CHAT") {
         socket.emit("room message", {
           chat_id: chatInfo?.chatId,

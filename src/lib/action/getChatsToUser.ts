@@ -93,3 +93,19 @@ export async function getChatFromId(chatId: string) {
   });
   return friendsInfo;
 }
+
+export async function getImageToMediaInChatInfo(chatId: string) {
+  const mediaLink = await db.chatMessage.findMany({
+    where: {
+      chat_id: chatId,
+      media_link: {
+        not: null,
+      },
+    },
+    select: { media_link: !null },
+  });
+  console.log("====================================");
+  console.log(mediaLink);
+  console.log("====================================");
+  return mediaLink;
+}

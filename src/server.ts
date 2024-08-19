@@ -1,7 +1,12 @@
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
-import { addMessageToChat, addMessageToGroup } from "./lib/action/addMessage";
+import {
+  addMessageToChat,
+  addMessageToGroup,
+  deleteChatMessageFromDatabase,
+  deleteGroupMessageFromDatabase,
+} from "./lib/action/Message";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 3000;
@@ -63,6 +68,27 @@ app.prepare().then(() => {
           io.to(group_chat_id).emit("room message", { error });
           console.error("Error handling room message:", error);
         }
+      }
+    );
+    socket.on("room deleteMessage", async ({ chatId, messageId }) => {
+      console.log("====================================");
+      console.log(messageId);
+      console.log("====================================");
+      try {
+        const deleteMessage = await deleteChatMessageFromDatabase(messageId);
+        io.to(chatId).emit("room deleteMessage", deleteMessage);
+      } catch (error) {
+        io.to(chatId).emit("room message", { error });
+        console.error("Error handling room message:", error);
+      }
+    });
+    socket.on(
+      "group deleteMessage",
+      async (groupChatId: string, messageId: string) => {
+        console.log("====================================");
+        console.log(messageId);
+        console.log("====================================");
+        const deleteMessage = await deleteGroupMessageFromDatabase(messageId);
       }
     );
   });

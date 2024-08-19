@@ -38,3 +38,16 @@ export async function addMessageToGroup(
     throw new Error();
   }
 }
+
+export async function deleteGroupMessageFromDatabase(messageId: string) {
+  const deleteMessage = await db.groupChatMessage.delete({
+    where: { id: messageId },
+  });
+  return deleteMessage;
+}
+export async function deleteChatMessageFromDatabase(messageId: string) {
+  const deleteMessage = await db.chatMessage.delete({
+    where: { id: messageId },
+  });
+  return deleteMessage;
+}

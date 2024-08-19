@@ -5,6 +5,8 @@ import { messageInfo } from "@/lib/types";
 import clsx from "clsx";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
+import { DeleteMassageButton } from "./deleteMassageButton";
+
 export const ConversationSection = () => {
   const { chatInfo, setChatInfo } = useContext(chatInfoContext);
   const [currentUser, setCurrentUser] = useState<any>();
@@ -40,8 +42,30 @@ export const ConversationSection = () => {
       }
     };
 
-    socket.on("room message", handleMessage);
+    const handleDeleteMessage = (message: messageInfo[0]) => {
+      if (message)
+        setChatInfo((prevChatInfo) => {
+          if (prevChatInfo) {
+            const updatedMessageInfo = prevChatInfo.messageInfo
+              ? prevChatInfo.messageInfo.filter((mess) => {
+                  return mess.id !== message.id;
+                })
+              : [];
 
+            return {
+              ...prevChatInfo,
+              messageInfo: updatedMessageInfo,
+            };
+          }
+          return undefined;
+        });
+      else {
+        console.log("recive null");
+        return;
+      }
+    };
+    socket.on("room message", handleMessage);
+    socket.on("room deleteMessage", handleDeleteMessage);
     //clean the listner
     return () => {
       socket.off("room message", handleMessage);
@@ -60,6 +84,7 @@ export const ConversationSection = () => {
   useEffect(() => {
     scrollToBottom();
   }, [chatInfo]);
+
   return (
     <div ref={chatBodyRef} className="chat-body p-4 flex-1 overflow-y-auto">
       {chatInfo?.messageInfo &&
@@ -84,17 +109,7 @@ export const ConversationSection = () => {
                     </p>
                   )}
 
-                  <button
-                    type="button"
-                    className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"
-                  >
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="w-full h-full fill-current"
-                    >
-                      <path d="M10.001,7.8C8.786,7.8,7.8,8.785,7.8,10s0.986,2.2,2.201,2.2S12.2,11.215,12.2,10S11.216,7.8,10.001,7.8z M3.001,7.8C1.786,7.8,0.8,8.785,0.8,10s0.986,2.2,2.201,2.2S5.2,11.214,5.2,10S4.216,7.8,3.001,7.8z M17.001,7.8C15.786,7.8,14.8,8.785,14.8,10s0.986,2.2,2.201,2.2S19.2,11.215,19.2,10S18.216,7.8,17.001,7.8z" />
-                    </svg>
-                  </button>
+                  <DeleteMassageButton messageId={message.id} />
                   <button
                     type="button"
                     className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"
