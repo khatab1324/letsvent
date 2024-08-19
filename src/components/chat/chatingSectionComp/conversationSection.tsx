@@ -6,6 +6,7 @@ import clsx from "clsx";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { DeleteMassageButton } from "./deleteMassageButton";
+import { EditMessage } from "./editMessage";
 
 export const ConversationSection = () => {
   const { chatInfo, setChatInfo } = useContext(chatInfoContext);
@@ -110,17 +111,7 @@ export const ConversationSection = () => {
                   )}
 
                   <DeleteMassageButton messageId={message.id} />
-                  <button
-                    type="button"
-                    className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"
-                  >
-                    <svg
-                      viewBox="0 0 20 20"
-                      className="w-full h-full fill-current"
-                    >
-                      <path d="M19,16.685c0,0-2.225-9.732-11-9.732V2.969L1,9.542l7,6.69v-4.357C12.763,11.874,16.516,12.296,19,16.685z" />
-                    </svg>
-                  </button>
+                  <EditMessage messageId={message.id} />
                   <button
                     type="button"
                     className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"
