@@ -7,6 +7,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { DeleteMassageButton } from "./deleteMassageButton";
 import { EditMessage } from "./editMessage";
+import { convertToValidDate } from "@/lib/action/convertToValidDate";
 
 export const ConversationSection = () => {
   const { chatInfo, setChatInfo } = useContext(chatInfoContext);
@@ -86,12 +87,15 @@ export const ConversationSection = () => {
     scrollToBottom();
   }, [chatInfo]);
 
+ 
   return (
     <div ref={chatBodyRef} className="chat-body p-4 flex-1 overflow-y-auto">
       {chatInfo?.messageInfo &&
         chatInfo.messageInfo.map((message, index) => (
           <div key={index}>
-            <p className="p-4 text-center text-sm text-gray-500">8:04 PM</p>
+            <p className="p-4 text-center text-sm text-gray-500">
+              {convertToValidDate(message.create_at)}
+            </p>
             <div
               className={clsx("flex flex-row", {
                 "justify-end": message.sender_id === currentUser?.id,
