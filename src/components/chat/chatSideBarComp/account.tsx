@@ -18,6 +18,7 @@ export const Account = () => {
   const [image, setImage] = useState<string>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<userInfoFromSession>();
+
   useEffect(() => {
     const userInfoFunction = async () => {
       const user = await getUserFromSession();
@@ -36,7 +37,7 @@ export const Account = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result as string);
-     };
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -48,14 +49,19 @@ export const Account = () => {
     setInputValue(e.target.value);
   };
 
+  const handleSubmit = () => {};
+
   return (
     <div className="w-16 h-16 relative flex flex-shrink-0">
       <img
         className="rounded-full w-full h-full object-cover cursor-pointer transition-transform duration-200 hover:scale-105"
         alt="user-avatar"
-        src={"https://randomuser.me/api/portraits/men/97.jpg"}
+        src={
+          userInfo?.image || "https://randomuser.me/api/portraits/men/97.jpg"
+        }
         onClick={() => setShowUserForm(true)}
       />
+
       {showUserForm && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div
@@ -72,10 +78,7 @@ export const Account = () => {
             <h2 className="text-3xl font-extrabold mb-6 text-center text-gray-900">
               Account Settings
             </h2>
-            <form
-              // onSubmit={handleSubmit}
-              className="space-y-6"
-            >
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex justify-around">
                 <div
                   className="w-16 h-16 relative flex flex-shrink-0                     onClick={handleImageClick}
@@ -118,6 +121,17 @@ export const Account = () => {
                   value={name}
                   // onChange={handleNameChange}
                   className="h-10 border-b-4 border-gray-300 focus:outline-none focus:border-blue-500 transition-shadow duration-200"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 font-medium text-gray-700">
+                  current password{" "}
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  // onChange={handlePasswordChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
                 />
               </div>
               <div>

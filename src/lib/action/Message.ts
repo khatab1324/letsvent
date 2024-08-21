@@ -40,14 +40,45 @@ export async function addMessageToGroup(
 }
 
 export async function deleteGroupMessageFromDatabase(messageId: string) {
+  //TODO: delete the image from cloudnary
   const deleteMessage = await db.groupChatMessage.delete({
     where: { id: messageId },
   });
   return deleteMessage;
 }
 export async function deleteChatMessageFromDatabase(messageId: string) {
+  //TODO: delete the image from cloudnary
   const deleteMessage = await db.chatMessage.delete({
     where: { id: messageId },
   });
   return deleteMessage;
+}
+
+export async function editChatMessageFromDatabase(
+  messageId: string,
+  textMessage: string
+) {
+  const updateMessage = await db.chatMessage.update({
+    where: {
+      id: messageId,
+    },
+    data: {
+      message: textMessage,
+    },
+  });
+  return updateMessage;
+}
+export async function edit1GroupMessageFromDatabase(
+  messageId: string,
+  textMessage: string
+) {
+  const updateMessage = await db.groupChatMessage.update({
+    where: {
+      id: messageId,
+    },
+    data: {
+      message: textMessage,
+    },
+  });
+  return updateMessage;
 }

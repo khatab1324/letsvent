@@ -66,8 +66,28 @@ export const ConversationSection = () => {
         return;
       }
     };
+    const handleEditMessage = (message: messageInfo[0]) => {
+      if (message)
+        setChatInfo((prevChatInfo) => {
+          if (prevChatInfo) {
+            const UpdateMessageInfo = prevChatInfo.messageInfo?.map(
+              (prevMessage) => {
+                if (prevMessage.id === message.id)
+                  prevMessage.message = message.message;
+                return prevMessage;
+              }
+            );
+            return {
+              ...prevChatInfo,
+              messageInfo: UpdateMessageInfo,
+            };
+          }
+          return undefined;
+        });
+    };
     socket.on("room message", handleMessage);
     socket.on("room deleteMessage", handleDeleteMessage);
+    socket.on("room editMessage", handleEditMessage);
     //clean the listner
     return () => {
       socket.off("room message", handleMessage);
@@ -87,7 +107,6 @@ export const ConversationSection = () => {
     scrollToBottom();
   }, [chatInfo]);
 
- 
   return (
     <div ref={chatBodyRef} className="chat-body p-4 flex-1 overflow-y-auto">
       {chatInfo?.messageInfo &&
@@ -114,19 +133,21 @@ export const ConversationSection = () => {
                     </p>
                   )}
 
-                  <DeleteMassageButton messageId={message.id} />
-                  <EditMessage messageId={message.id} />
-                  <button
-                    type="button"
-                    className="hidden group-hover:block flex flex-shrink-0 focus:outline-none mx-2 block rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-700 bg-gray-800 w-8 h-8 p-2"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-full h-full fill-current"
-                    >
-                      <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-3.54-4.46a1 1 0 0 1 1.42-1.42 3 3 0 0 0 4.24 0 1 1 0 0 1 1.42 1.42 5 5 0 0 1-7.08 0zM9 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm6 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                    </svg>
-                  </button>
+                  {message.sender_id === currentUser?.id ? (
+                    <>
+                      <DeleteMassageButton
+                        messageId={message.id}
+                        senderId={message.sender_id}
+                      />
+                      <EditMessage
+                        messageId={message.id}
+                        senderId={message.sender_id}
+                        textMessage={message.message}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
             </div>

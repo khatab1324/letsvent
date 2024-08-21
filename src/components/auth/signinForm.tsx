@@ -34,7 +34,7 @@ export default function SigninForm() {
   const onSubmit: SubmitHandler<z.infer<typeof signinSchema>> = async (
     data
   ) => {
-    //i need to use server there for i will use signin.ts
+    //i need to use server therefor i will use signin.ts
     startTransition(() => {
       signin(data).then((data) => {
         console.log(data);

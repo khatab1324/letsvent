@@ -6,6 +6,8 @@ import {
   addMessageToGroup,
   deleteChatMessageFromDatabase,
   deleteGroupMessageFromDatabase,
+  edit1GroupMessageFromDatabase,
+  editChatMessageFromDatabase,
 } from "./lib/action/Message";
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -71,24 +73,92 @@ app.prepare().then(() => {
       }
     );
     socket.on("room deleteMessage", async ({ chatId, messageId }) => {
-      console.log("====================================");
-      console.log(messageId);
-      console.log("====================================");
       try {
-        const deleteMessage = await deleteChatMessageFromDatabase(messageId);
-        io.to(chatId).emit("room deleteMessage", deleteMessage);
+        if (chatId && messageId) {
+          const deleteMessage = await deleteChatMessageFromDatabase(messageId);
+          io.to(chatId).emit("room deleteMessage", deleteMessage);
+        } else {
+          io.to(chatId).emit("room message", {
+            error: "chat id or message id is null",
+          });
+          console.error(
+            "Error handling room message:",
+            "group id or message id is null"
+          );
+        }
       } catch (error) {
         io.to(chatId).emit("room message", { error });
         console.error("Error handling room message:", error);
       }
     });
+    socket.on("group deleteMessage", async ({ groupChatId, messageId }) => {
+      try {
+        if (groupChatId && messageId) {
+          const deleteMessage = await deleteGroupMessageFromDatabase(messageId);
+          io.to(groupChatId).emit("room deleteMessage", deleteMessage);
+        } else {
+          io.to(groupChatId).emit("room message", {
+            error: "group id or message id is null",
+          });
+          console.error(
+            "Error handling room message:",
+            "group id or message id is null"
+          );
+        }
+      } catch (error) {
+        io.to(groupChatId).emit("room message", { error });
+        console.error("Error handling room message:", error);
+      }
+    });
     socket.on(
-      "group deleteMessage",
-      async (groupChatId: string, messageId: string) => {
-        console.log("====================================");
-        console.log(messageId);
-        console.log("====================================");
-        const deleteMessage = await deleteGroupMessageFromDatabase(messageId);
+      "room editMessage",
+      async ({ chatId, messageId, textMessage }) => {
+        try {
+          if (chatId && messageId) {
+            const deleteMessage = await editChatMessageFromDatabase(
+              messageId,
+              textMessage
+            );
+            io.to(chatId).emit("room editMessage", deleteMessage);
+          } else {
+            io.to(chatId).emit("room message", {
+              error: "chat id or message id is null",
+            });
+            console.error(
+              "Error handling room message:",
+              "chat id or message id is null"
+            );
+          }
+        } catch (error) {
+          io.to(groupChatId).emit("room message", { error });
+          console.error("Error handling room message:", error);
+        }
+      }
+    );
+
+    socket.on(
+      "group editMessage",
+      async ({ groupChatId, messageId, textMessage }) => {
+        try {
+          if (groupChatId && messageId) {
+            const deleteMessage = await edit1GroupMessageFromDatabase(
+              messageId,
+              textMessage
+            );
+            io.to(groupChatId).emit("room editMessage", deleteMessage);
+          } else {
+            io.to(groupChatId).emit("room message", {
+              error: "group id or message id is null",
+            });
+            console.error(
+              "Error handling room message:",
+              "group id or message id is null"
+            );
+          }
+        } catch (error) {
+          io.to(groupChatId).emit("room message", { error });
+          console.error("Error handling room message:", error);
+        }
       }
     );
   });

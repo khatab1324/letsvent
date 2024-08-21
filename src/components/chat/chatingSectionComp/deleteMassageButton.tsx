@@ -1,17 +1,33 @@
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { socket } from "@/app/clientSocket";
+import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 import React, { useContext, useEffect } from "react";
 import { MdDelete } from "react-icons/md";
 
-export const DeleteMassageButton = ({ messageId }: { messageId: string }) => {
+export const DeleteMassageButton = ({
+  messageId,
+  senderId,
+}: {
+  messageId: string;
+  senderId: string;
+}) => {
   const { chatInfo } = useContext(chatInfoContext);
   const handleDeleteClick = async (messageId: string) => {
     console.log(messageId);
+    const user = await getUserFromSession();
 
     if (chatInfo?.role === "CHAT") {
-      socket.emit("room deleteMessage", { chatId: chatInfo.chatId, messageId });
+      if (user?.id === senderId)
+        socket.emit("room deleteMessage", {
+          chatId: chatInfo.chatId,
+          messageId,
+        });
     } else if (chatInfo?.role === "GROUP") {
-      socket.emit("group deleteMessage", messageId);
+      if (user?.id === senderId)
+        socket.emit("group deleteMessage", {
+          groupChatId: chatInfo.chatId,
+          messageId,
+        });
     }
   };
   return (
