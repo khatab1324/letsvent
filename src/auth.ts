@@ -7,6 +7,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       role: "ADMIN" | "USER";
+      isOAuth: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -25,9 +26,30 @@ export const {
         //here i prevent the signin without emial verification
         if (!existingUser?.emailVerified) return false;
       }
+
       return true;
     },
+    async session({ token, session }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      if (session.user) {
+        session.user.name = token.name;
+        session.user.email = token.email as string;
+        session.user.isOAuth = token.isOAuth as boolean;
+      }
+
+      return session;
+    },
+    async jwt({ token }) {
+      const existingUser = await getUserById(token.sub as string);
+      if (!existingUser) return token;
+      token.useOAuth = !!existingUser;
+      return token;
+    },
   },
+
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   ...authConfig,

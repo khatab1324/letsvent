@@ -2,11 +2,12 @@ import { auth } from "@/auth";
 import { createChat } from "@/lib/action/createChat";
 import React, { useState, useEffect, useRef, SetStateAction } from "react";
 import { RiUserAddFill } from "react-icons/ri";
-import { SessionProvider, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { validateCreateChat } from "@/lib/action/validateCreateChat";
 import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 import { userInfoFromSession } from "@/lib/types";
 import { SignOutButton } from "./signOutButton";
+import { useCurrentSessionUser } from "@/hooks/use-current-session-user";
 
 export const Account = () => {
   const [showUserForm, setShowUserForm] = useState<boolean>(false);
@@ -16,9 +17,8 @@ export const Account = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [image, setImage] = useState<string>();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [userInfo, setUserInfo] = useState<userInfoFromSession>();
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const userInfoFunction = async () => {
       const user = await getUserFromSession();
@@ -49,7 +49,15 @@ export const Account = () => {
     setInputValue(e.target.value);
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (image) {
+      console.log("====================================");
+      console.log(image);
+      console.log("====================================");
+    }
+  };
 
   return (
     <div className="w-16 h-16 relative flex flex-shrink-0">

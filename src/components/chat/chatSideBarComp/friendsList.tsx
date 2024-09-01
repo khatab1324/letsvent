@@ -4,7 +4,13 @@ import {
   getChatFromId,
   getChats,
 } from "@/lib/action/getChatsToUser";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { Chat, ChatsList, messageInfo, Role } from "@/lib/types";
 import { socket } from "@/app/clientSocket";
@@ -16,6 +22,7 @@ import {
 export const FriendsList = () => {
   const { setChatInfo } = useContext(chatInfoContext);
   const [chatsList, setChatList] = useState<ChatsList[]>([]);
+
   useEffect(() => {
     //this code will be change
     //TODO: edit this no body will call function like this
