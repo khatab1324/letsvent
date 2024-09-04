@@ -1,42 +1,41 @@
-import { auth } from "@/auth";
-import { createChat } from "@/lib/action/createChat";
 import React, { useState, useEffect, useRef, SetStateAction } from "react";
-import { RiUserAddFill } from "react-icons/ri";
-import { useSession } from "next-auth/react";
-import { validateCreateChat } from "@/lib/action/validateCreateChat";
 import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 import { userInfoFromSession } from "@/lib/types";
 import { SignOutButton } from "./signOutButton";
-import { useCurrentSessionUser } from "@/hooks/use-current-session-user";
+import { useSession } from "next-auth/react";
 
 export const Account = () => {
   const [showUserForm, setShowUserForm] = useState<boolean>(false);
-  const [inputValue, setInputValue] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const [changedPassword, setChangedPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [image, setImage] = useState<string>();
+  const [changedImage, setChangedImage] = useState<string>();
   const [userInfo, setUserInfo] = useState<userInfoFromSession>();
+  const [changedName, setchangedName] = useState<string>();
+  const [changedPhoneNumber, setChangedPhoneNumber] = useState<string>();
+  const [changedEmail, setChangedEmail] = useState<string>();
+  const { data: session, update } = useSession();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const userInfoFunction = async () => {
       const user = await getUserFromSession();
       if (user) {
         setUserInfo(user);
-        setImage(user.image as string);
-        setName(user.name as string);
+        setChangedImage(user.image as string);
       }
     };
     userInfoFunction();
   }, []);
+
   //TODO: add this to hock and reuse it in this file and in sending image file
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setImage(reader.result as string);
+        setChangedImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -45,18 +44,33 @@ export const Account = () => {
     fileInputRef.current?.click();
   };
 
-  const changeInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (image) {
-      console.log("====================================");
-      console.log(image);
-      console.log("====================================");
-    }
+    // if (changedImage) {
+    //   console.log("====================================");
+    //   console.log(changedImage);
+    //   console.log("====================================");
+    // }
+    // console.log(await update({ name: "sssssssssss" }));
+    // if (session) session.user.name = "ssss";
+
+    // const userInfoFunction = async () => {
+    //   const user = await getUserFromSession();
+    //   if (user) {
+    //     setUserInfo(user);
+    //     setChangedImage(user.image as string);
+    //   }
+    // };
+    // userInfoFunction();
+
+    if (session)
+      console.log(
+        await update({
+          ...session,
+          user: { ...session.user, email: "katab.emad13245@gmail.com" },
+        })
+      );
   };
 
   return (
@@ -76,10 +90,9 @@ export const Account = () => {
             className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-200"
             onClick={() => {
               setShowUserForm(false);
-              setInputValue("");
+              setChangedImage("");
               setError("");
               setSuccess("");
-              setImage(userInfo?.image as string);
             }}
           ></div>
           <div className="relative bg-white p-8 rounded-lg shadow-2xl z-10 text-black w-full max-w-lg mx-4 sm:mx-auto">
@@ -97,7 +110,9 @@ export const Account = () => {
                     className="rounded-full w-full h-full object-cover cursor-pointer transition-transform duration-200 hover:scale-105"
                     alt="user-avatar"
                     src={
-                      image || "https://randomuser.me/api/portraits/men/97.jpg"
+                      changedImage ||
+                      userInfo?.image ||
+                      "https://randomuser.me/api/portraits/men/97.jpg"
                     }
                   />
                   <div className=" absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-0 rounded-full hover:bg-opacity-75 transition duration-200 opacity-0 hover:opacity-100">
@@ -126,29 +141,48 @@ export const Account = () => {
                 </div>
                 <input
                   type="text"
-                  value={name}
+                  value={changedName || (userInfo?.name as string)}
                   // onChange={handleNameChange}
                   className="h-10 border-b-4 border-gray-300 focus:outline-none focus:border-blue-500 transition-shadow duration-200"
+                  onChange={(e) => setchangedName(e.target.value)}
                 />
               </div>
               <div>
                 <label className="block mb-2 font-medium text-gray-700">
-                  current password{" "}
+                  email{" "}
                 </label>
                 <input
                   type="password"
-                  value={password}
                   // onChange={handlePasswordChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
                 />
               </div>
               <div>
+                {" "}
+                <label className="block mb-2 font-medium text-gray-700">
+                  phone
+                </label>
+                <input
+                  type="password"
+                  value={""}
+                  // onChange={handlePasswordChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
+                />{" "}
                 <label className="block mb-2 font-medium text-gray-700">
                   Change Password
                 </label>
                 <input
                   type="password"
-                  value={password}
+                  value={changedPassword}
+                  // onChange={handlePasswordChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
+                />
+                <label className="block mb-2 font-medium text-gray-700">
+                  Change Password
+                </label>
+                <input
+                  type="password"
+                  value={""}
                   // onChange={handlePasswordChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
                 />

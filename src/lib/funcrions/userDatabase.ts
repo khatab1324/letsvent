@@ -29,4 +29,3 @@ export async function getUserByName(name: string) {
     return;
   }
 }
-

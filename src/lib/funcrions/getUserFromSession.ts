@@ -3,11 +3,12 @@
 //becuase that it show you this message Cannot access '__WEBPACK_DEFAULT_EXPORT__' before initialization
 // i add the function in here
 import { auth } from "@/auth";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { getUserByEmail } from "./userDatabase";
 
 export async function getUserFromSession() {
   const session = await auth();
+
   console.log("session", session?.user);
   if (!session?.user.email) {
     signOut(); //this mean he in some way enter witout premition

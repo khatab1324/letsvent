@@ -6,11 +6,14 @@ import { signOut } from "@/auth";
 import { SignOutButton } from "./signOutButton";
 import { Account } from "./account";
 import { AddGroup } from "./addGroup";
+import { SessionProvider } from "next-auth/react";
 
 export const NavbarForSideBarSection = () => {
   return (
     <div className="header p-4 flex flex-row justify-between items-center flex-none">
-      <Account />
+      <SessionProvider>
+        <Account />
+      </SessionProvider>
       <p className="text-md font-bold hidden md:block group-hover:block">
         Messenger
       </p>

@@ -39,13 +39,17 @@ export const {
         session.user.email = token.email as string;
         session.user.isOAuth = token.isOAuth as boolean;
       }
-
       return session;
     },
-    async jwt({ token }) {
-      const existingUser = await getUserById(token.sub as string);
-      if (!existingUser) return token;
-      token.useOAuth = !!existingUser;
+    async jwt({ token, user, trigger, session }) {
+      //TODO : the id here is not define
+      // const existingUser = await getUserById(token.sub as string);
+      // if (!existingUser) return token;
+      // token.useOAuth = !!existingUser;
+      if (trigger === "update") {
+        return { ...token, ...session.user };
+      }
+
       return token;
     },
   },
