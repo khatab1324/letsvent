@@ -55,3 +55,12 @@ export type groupChats = ({
   creator_id: string;
   create_at: Date;
 })[];
+
+export type UserUpdateInfo = {
+  name?: string;
+  email?: string;
+  password?: string;
+  newPassword?: string;
+  phone?: string;
+  image?: string;
+};

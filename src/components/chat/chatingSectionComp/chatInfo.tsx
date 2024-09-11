@@ -1,6 +1,7 @@
 import { chatInfoContext } from "@/app/(pages)/chats/page";
 import { getImageToMediaInChatInfo } from "@/lib/action/getChatsToUser";
 import React, { useContext, useEffect } from "react";
+import { ChangingPasswordForm } from "../chatSideBarComp/changingPasswordForm";
 
 export const ChatInfo = ({
   mediaImage,
@@ -59,6 +60,7 @@ export const ChatInfo = ({
               )}
             </div>
           ))}
+         
         </div>
       </div>
     </div>

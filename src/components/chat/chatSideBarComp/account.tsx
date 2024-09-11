@@ -3,10 +3,13 @@ import { getUserFromSession } from "@/lib/funcrions/getUserFromSession";
 import { userInfoFromSession } from "@/lib/types";
 import { SignOutButton } from "./signOutButton";
 import { useSession } from "next-auth/react";
+import { updateUserInfo } from "@/lib/action/updateUserInfo";
+import { updateUserInfoFromDatabase } from "@/lib/action/interactWithDatabase/updateUser";
+import { ChangingPasswordForm } from "./changingPasswordForm";
 
 export const Account = () => {
+  //use reducere
   const [showUserForm, setShowUserForm] = useState<boolean>(false);
-  const [changedPassword, setChangedPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [changedImage, setChangedImage] = useState<string>();
@@ -63,14 +66,53 @@ export const Account = () => {
     //   }
     // };
     // userInfoFunction();
+    console.log(session);
 
-    if (session)
-      console.log(
-        await update({
-          ...session,
-          user: { ...session.user, email: "katab.emad13245@gmail.com" },
-        })
-      );
+    if (session) {
+      if (changedName) {
+        const updateUser = await updateUserInfo({
+          name: changedName,
+        });
+        if (updateUser)
+          console.log(
+            await update({
+              ...session,
+              user: { ...session.user, name: changedName },
+            })
+          );
+        setchangedName("");
+        console.log(updateUser);
+        setUserInfo(updateUser);
+      }
+      if (changedImage) {
+        //upload the image
+        //TODO: add the uploading the image to function
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: changedImage }),
+        });
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+        const data = await response.json();
+        console.log("Uploaded image URL:", data.url);
+
+        const updateUser = await updateUserInfo({
+          image: data.url,
+        });
+        if (updateUser)
+          console.log(
+            await update({
+              ...session,
+              user: { ...session.user, image: data.url },
+            })
+          );
+        setChangedImage("");
+        setUserInfo(updateUser);
+        setShowUserForm(!showUserForm);
+      }
+    }
   };
 
   return (
@@ -85,7 +127,7 @@ export const Account = () => {
       />
 
       {showUserForm && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50 ">
           <div
             className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-200"
             onClick={() => {
@@ -152,9 +194,10 @@ export const Account = () => {
                   email{" "}
                 </label>
                 <input
-                  type="password"
+                  type="email"
                   // onChange={handlePasswordChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
+                  className="w-full h-10 border-b-4 border-gray-300 focus:outline-none focus:border-blue-500 transition-shadow duration-200"
+                  value={changedEmail || userInfo?.email}
                 />
               </div>
               <div>
@@ -165,30 +208,13 @@ export const Account = () => {
                 <input
                   type="password"
                   value={""}
-                  // onChange={handlePasswordChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
-                />{" "}
-                <label className="block mb-2 font-medium text-gray-700">
-                  Change Password
-                </label>
-                <input
-                  type="password"
-                  value={changedPassword}
-                  // onChange={handlePasswordChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
-                />
-                <label className="block mb-2 font-medium text-gray-700">
-                  Change Password
-                </label>
-                <input
-                  type="password"
-                  value={""}
-                  // onChange={handlePasswordChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow duration-200"
+                  placeholder="07XXXXXXXX"
+                  className="w-full h-10 border-b-4 border-gray-300 focus:outline-none focus:border-blue-500 transition-shadow duration-200"
                 />
               </div>
               {error && <p className="text-red-600">{error}</p>}
               {success && <p className="text-green-600">{success}</p>}
+
               <button
                 type="submit"
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:bg-blue-800 transition-colors duration-200"
@@ -196,6 +222,8 @@ export const Account = () => {
                 Save Changes
               </button>
             </form>
+            <ChangingPasswordForm />
+
             <SignOutButton />
           </div>
         </div>

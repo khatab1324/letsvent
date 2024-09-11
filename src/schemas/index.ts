@@ -19,7 +19,6 @@ export const signupSchema = z
       message: "you should have 1 char or 1 number and without special char",
     }),
     confirmPassword: z.string(),
-    //TODO add schema that check if the confirmPasswor = password
   })
   .refine(({ password, confirmPassword }) => password === confirmPassword, {
     message: "Password does't match",
@@ -34,4 +33,12 @@ export const verificationSchema = z.object({
       message: "should have at least 3 char and not space",
     }),
   confirmPassword: z.string(),
+});
+export const changePasswordSchema = z.object({
+  password: z.string().min(6).regex(passwordValidation, {
+    message: "you should have 1 char or 1 number and without special char",
+  }),
+  newPassword: z.string().min(6).regex(passwordValidation, {
+    message: "you should have 1 char or 1 number and without special char",
+  }),
 });

@@ -2,7 +2,7 @@
 import { db } from "../db";
 import { getVerificationTokenByToken } from "../funcrions/verificationTokenDatabase";
 import { signin } from "./signin";
-
+//TODO: use server-only
 export async function verificationUserAfterSignin(
   token: string,
   username: string,
